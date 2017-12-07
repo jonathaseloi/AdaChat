@@ -1,4 +1,6 @@
 # AdaChat
 Chat bot com conversação sobre o curso de Ciência da Computação da UFG.
 
-Desenvolvido na matéria de Projeto de Software como projeto final.
+Desenvolvido para matéria de Projeto de Software como projeto final.
+
+Foi utilizado o IBM Watson Conversation para criação do chatbot.
