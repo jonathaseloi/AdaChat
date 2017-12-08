@@ -19,8 +19,13 @@ import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
 import com.ibm.watson.developer_cloud.http.ServiceCallback;
+import com.ps.trabalho.adachat.model.BotMessage;
+import com.ps.trabalho.adachat.model.UsuarioMessage;
 
 public class MainActivity extends AppCompatActivity {
+
+    UsuarioMessage usuarioMessage = new UsuarioMessage();
+    BotMessage botMessage = new BotMessage();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         final ConversationService myConversationService =
                 new ConversationService(
-                        "2017-05-26",
+                        "2017-12-07",
                         getString(R.string.username),
                         getString(R.string.password)
                 );
@@ -44,16 +49,16 @@ public class MainActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView tv,
                                           int action, KeyEvent keyEvent) {
                 if(action == EditorInfo.IME_ACTION_DONE) {
-                    final String inputText = userInput.getText().toString();
+
+                    usuarioMessage.setTexto(userInput.getText().toString());
                     conversation.append(
-                            Html.fromHtml("<p><b>You:</b> " + inputText + "</p>")
+                            Html.fromHtml("<p><b>You:</b> " + usuarioMessage.getTexto() + "</p>")
                     );
 
-// Optionally, clear edittext
                     userInput.setText("");
 
                     MessageRequest request = new MessageRequest.Builder()
-                            .inputText(inputText)
+                            .inputText(usuarioMessage.getTexto())
                             .build();
 
                     myConversationService
@@ -61,13 +66,13 @@ public class MainActivity extends AppCompatActivity {
                             .enqueue(new ServiceCallback<MessageResponse>() {
                                 @Override
                                 public void onResponse(MessageResponse response) {
-                                    final String outputText = response.getText().get(0);
+                                    botMessage.setMessage(response.getText().get(0));
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
                                             conversation.append(
                                                     Html.fromHtml("<p><b>ADA Bot:</b> " +
-                                                            outputText + "</p>")
+                                                            botMessage.getMessage() + "</p>")
                                             );
                                         }
                                     });
@@ -85,27 +90,6 @@ public class MainActivity extends AppCompatActivity {
                                 public void onFailure(Exception e) {}
                             });
 
-//                    String quotesURL =
-//                            "https://api.forismatic.com/api/1.0/" +
-//                                    "?method=getQuote&format=text&lang=en";
-//
-//                    Fuel.get(quotesURL)
-//                            .responseString(new Handler<String>() {
-//                                @Override
-//                                public void success(Request request,
-//                                                    Response response, String quote) {
-//                                    conversation.append(
-//                                            Html.fromHtml("<p><b>Bot:</b> " +
-//                                                    quote + "</p>")
-//                                    );
-//                                }
-//
-//                                @Override
-//                                public void failure(Request request,
-//                                                    Response response,
-//                                                    FuelError fuelError) {
-//                                }
-//                            });
                 }
                 return false;
             }
