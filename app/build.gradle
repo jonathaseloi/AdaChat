@@ -26,7 +26,10 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
     compile 'com.ibm.watson.developer_cloud:java-sdk:3.7.2'
-    compile 'com.android.support:design:23.4.0'
+    compile 'com.android.support:design:26.1.0'
     compile 'com.github.kittinunf.fuel:fuel-android:1.9.0'
 }

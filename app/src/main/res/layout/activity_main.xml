@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context="com.ps.trabalho.adachat.MainActivity">
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lvConversation"
+        android:transcriptMode="alwaysScroll"
+        android:layout_marginBottom="80dp"/>
+
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,25 +23,11 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/user_input"
+            android:id="@+id/userInput"
             android:imeOptions="actionDone"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:inputType="textShortMessage"/>
     </android.support.design.widget.TextInputLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/user_input_container"
-        android:id="@+id/svTexto"
-        android:padding="10dp">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/conversation"
-            android:textSize="18sp"
-            />
-    </ScrollView>
 
 </RelativeLayout>

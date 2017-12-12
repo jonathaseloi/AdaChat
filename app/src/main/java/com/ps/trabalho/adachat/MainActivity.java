@@ -3,10 +3,14 @@ package com.ps.trabalho.adachat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -22,83 +26,81 @@ import com.ibm.watson.developer_cloud.http.ServiceCallback;
 import com.ps.trabalho.adachat.model.BotMessage;
 import com.ps.trabalho.adachat.model.UsuarioMessage;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
 
-    UsuarioMessage usuarioMessage = new UsuarioMessage();
-    BotMessage botMessage = new BotMessage();
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static android.icu.lang.UProperty.INT_START;
+
+public class MainActivity extends AppCompatActivity implements MainView {
+
+    private UsuarioMessage usuarioMessage = new UsuarioMessage();
+
+    @BindView(R.id.lvConversation)
+    protected ListView conversation;
+
+    @BindView(R.id.userInput)
+    protected EditText userInput;
+
+    private MainPresenter presenter;
+    private List<String> conversa = new ArrayList<>();
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        final ConversationService myConversationService =
-                new ConversationService(
-                        "2017-12-07",
-                        getString(R.string.username),
-                        getString(R.string.password)
-                );
+        //Listview
+        adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, conversa);
+        conversation.setAdapter(adapter);
 
-        final TextView conversation = (TextView)findViewById(R.id.conversation);
-        final EditText userInput = (EditText)findViewById(R.id.user_input);
-        final ScrollView scrollView = (ScrollView)findViewById(R.id.svTexto);
+        //Param.: MainView, Login, Senha, Código do WorkSpace
+        presenter = new MainPresenterImpl(this, getString(R.string.username), getString(R.string.password), getString(R.string.workspace), adapter);
 
+        //Colocando funcao enviar no icone done do teclado
         userInput.setOnEditorActionListener(new TextView
                 .OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView tv,
                                           int action, KeyEvent keyEvent) {
                 if(action == EditorInfo.IME_ACTION_DONE) {
-
                     usuarioMessage.setTexto(userInput.getText().toString());
-                    conversation.append(
-                            Html.fromHtml("<p><b>You:</b> " + usuarioMessage.getTexto() + "</p>")
-                    );
-
                     userInput.setText("");
 
-                    MessageRequest request = new MessageRequest.Builder()
-                            .inputText(usuarioMessage.getTexto())
-                            .build();
-
-                    myConversationService
-                            .message(getString(R.string.workspace), request)
-                            .enqueue(new ServiceCallback<MessageResponse>() {
-                                @Override
-                                public void onResponse(MessageResponse response) {
-                                    botMessage.setMessage(response.getText().get(0));
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            conversation.append(
-                                                    Html.fromHtml("<p><b>ADA Bot:</b> " +
-                                                            botMessage.getMessage() + "</p>")
-                                            );
-                                        }
-                                    });
-                                    scrollView.fullScroll(View.FOCUS_DOWN);
-                                    scrollView.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            scrollView.fullScroll(View.FOCUS_DOWN);
-                                        }
-                                    });
-
-                                }
-
-                                @Override
-                                public void onFailure(Exception e) {}
-                            });
-
+                    presenter.enviarMessage(usuarioMessage);
                 }
                 return false;
             }
         });
 
+    }
 
+    @Override
+    public void setUserMessage(UsuarioMessage usuarioMessage) {
+        conversa.add("Você \n   " + usuarioMessage.getTexto());
+        adapter.notifyDataSetChanged();
+        scrollDown();
+    }
 
+    @Override
+    public void setAdaBotMessage(final BotMessage botMessage) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                conversa.add("ADA Bot\n " + botMessage.getMessage());
+                adapter.notifyDataSetChanged();
+                scrollDown();
+            }
+        });
 
+    }
 
-
+    public void scrollDown() {
+        conversation.setSelection(adapter.getCount() - 1);
     }
 }
