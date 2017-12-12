@@ -5,4 +5,5 @@ Desenvolvido para matéria de Projeto de Software como projeto final.
 
 Foi utilizado o IBM Watson Conversation para criação do chatbot.
 
-Link para documentação: https://drive.google.com/file/d/16G8ATV13IUrQqAcowzB0mO9VhmxEc-r8/view
+Link para documentação: https://drive.google.com/open?id=1l6GuRE9bNLwgxbyaHYeYFUKROKj6EzYO
+
